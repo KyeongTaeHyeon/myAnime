@@ -14,7 +14,8 @@ class AnimechanIngestionService
       endpoint = "https://#{endpoint}" unless endpoint.start_with?('http://', 'https://')
       url = "#{endpoint}/quotes?anime=#{CGI.escape(anime_name.to_s)}"
       uri = URI.parse(url)
-      res = Net::HTTP.get_response(uri)
+      req = Net::HTTP::Get.new(uri)
+      res = perform(uri, req)
 
       if res.code.to_i == 429
         RateLimitService.record_rate_limited(PROVIDER, 3600)
@@ -49,6 +50,31 @@ class AnimechanIngestionService
     rescue StandardError => e
       RateLimitService.record_failure(PROVIDER, e.message)
       raise
+    end
+
+    private
+
+    def perform(uri, req)
+      max_retries = ENV.fetch('HTTP_MAX_RETRIES', '2').to_i
+      open_timeout = ENV.fetch('HTTP_OPEN_TIMEOUT_SEC', '5').to_i
+      read_timeout = ENV.fetch('HTTP_READ_TIMEOUT_SEC', '15').to_i
+      write_timeout = ENV.fetch('HTTP_WRITE_TIMEOUT_SEC', '15').to_i
+      attempts = 0
+
+      begin
+        attempts += 1
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          http.open_timeout = open_timeout
+          http.read_timeout = read_timeout
+          http.write_timeout = write_timeout if http.respond_to?(:write_timeout=)
+          http.request(req)
+        end
+      rescue Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNRESET, Errno::ETIMEDOUT, SocketError, EOFError
+        raise if attempts > max_retries
+
+        sleep(0.3 * attempts)
+        retry
+      end
     end
   end
 end

@@ -86,8 +86,25 @@ class AnilistIngestionService
     private
 
     def perform(uri, req)
-      Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
-        http.request(req)
+      max_retries = ENV.fetch('HTTP_MAX_RETRIES', '2').to_i
+      open_timeout = ENV.fetch('HTTP_OPEN_TIMEOUT_SEC', '5').to_i
+      read_timeout = ENV.fetch('HTTP_READ_TIMEOUT_SEC', '15').to_i
+      write_timeout = ENV.fetch('HTTP_WRITE_TIMEOUT_SEC', '15').to_i
+      attempts = 0
+
+      begin
+        attempts += 1
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == 'https') do |http|
+          http.open_timeout = open_timeout
+          http.read_timeout = read_timeout
+          http.write_timeout = write_timeout if http.respond_to?(:write_timeout=)
+          http.request(req)
+        end
+      rescue Net::OpenTimeout, Net::ReadTimeout, Errno::ECONNRESET, Errno::ETIMEDOUT, SocketError, EOFError => e
+        raise if attempts > max_retries
+
+        sleep(0.3 * attempts)
+        retry
       end
     end
 

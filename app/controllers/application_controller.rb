@@ -4,7 +4,9 @@ class ApplicationController < ActionController::Base
   private
 
   def jwt_secret
-    ENV.fetch('JWT_SECRET', 'change_me_change_me_change_me_change_me')
+    ENV.fetch('JWT_SECRET')
+  rescue KeyError
+    raise KeyError, 'JWT_SECRET is required'
   end
 
   def current_user
@@ -26,6 +28,14 @@ class ApplicationController < ActionController::Base
     render json: { error: 'Unauthorized' }, status: :unauthorized
   end
 
+  def require_admin!
+    require_auth!
+    return if performed?
+    return if current_user.role.to_s.upcase == 'ADMIN'
+
+    render json: { error: 'Forbidden' }, status: :forbidden
+  end
+
   def bearer_token
     header = request.headers['Authorization'].to_s
     return nil unless header.start_with?('Bearer ')
@@ -37,6 +47,7 @@ class ApplicationController < ActionController::Base
     page = params.fetch(:page, 0).to_i
     size = params.fetch(:size, default_size).to_i
     size = default_size if size <= 0
+    size = [size, 100].min
     page = 0 if page.negative?
 
     total = scope.count

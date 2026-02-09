@@ -2,7 +2,7 @@ module Api
   module Admin
     class IngestionController < ApplicationController
       skip_forgery_protection
-      before_action :require_auth!
+      before_action :require_admin!
 
       def season
         saved = AnilistIngestionService.ingest_season(
