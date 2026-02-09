@@ -1,0 +1,24 @@
+<section class="panel" style="max-width: 520px;">
+  <h1 class="title">회원가입</h1>
+  <form action="<%= register_path %>" method="post">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <p>
+      <label for="display_name">닉네임</label><br />
+      <input id="display_name" class="input" type="text" name="display_name" required />
+    </p>
+    <p>
+      <label for="email">이메일</label><br />
+      <input id="email" class="input" type="email" name="email" required />
+    </p>
+    <p>
+      <label for="password">비밀번호</label><br />
+      <input id="password" class="input" type="password" name="password" minlength="8" required />
+    </p>
+    <p>
+      <label for="password_confirmation">비밀번호 확인</label><br />
+      <input id="password_confirmation" class="input" type="password" name="password_confirmation" minlength="8" required />
+    </p>
+    <button class="btn" type="submit">계정 만들기</button>
+  </form>
+  <p class="meta" style="margin-top: 12px;">이미 계정이 있으면 <a href="<%= login_path %>">로그인</a></p>
+</section>

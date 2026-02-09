@@ -1,0 +1,28 @@
+<section class="panel">
+  <div class="row">
+    <h1 class="title">명대사 모음</h1>
+    <form class="search" action="<%= quotes_path %>" method="get">
+      <input class="input" type="text" name="q" value="<%= params[:q] %>" placeholder="명대사/캐릭터 검색" />
+      <button class="btn" type="submit">검색</button>
+    </form>
+  </div>
+  <p class="meta">총 <%= @page[:totalElements] %>개</p>
+</section>
+
+<section class="grid" style="margin-top: 14px;">
+  <% @quotes.each do |quote| %>
+    <article class="card">
+      <p style="margin: 0 0 10px;">“<%= quote.quote_text %>”</p>
+      <p class="meta"><%= quote.character_name %> · <%= quote.source %></p>
+    </article>
+  <% end %>
+</section>
+
+<div class="pager">
+  <% if @page[:page].positive? %>
+    <a class="btn alt" href="<%= quotes_path(q: params[:q], page: @page[:page] - 1, size: @page[:size]) %>">이전</a>
+  <% end %>
+  <% unless @page[:last] %>
+    <a class="btn alt" href="<%= quotes_path(q: params[:q], page: @page[:page] + 1, size: @page[:size]) %>">다음</a>
+  <% end %>
+</div>

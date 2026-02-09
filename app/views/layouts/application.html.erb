@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MyAnime</title>
+    <style>
+      :root {
+        --bg: #f4efe6;
+        --panel: #fffef8;
+        --ink: #1f1b16;
+        --muted: #6f665b;
+        --brand: #0f6e5a;
+        --brand-soft: #dff2ec;
+        --accent: #d78e2b;
+        --line: #e6dccf;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Avenir Next", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 0%, #f8f4ec 0%, transparent 35%),
+          radial-gradient(circle at 100% 30%, #f0f7f4 0%, transparent 40%),
+          var(--bg);
+      }
+      a { color: inherit; text-decoration: none; }
+      .container { width: min(1120px, 92vw); margin: 0 auto; }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: color-mix(in srgb, var(--panel) 84%, white);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(6px);
+      }
+      .topbar-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 0;
+        gap: 18px;
+      }
+      .brand {
+        font-family: "Palatino", "Times New Roman", serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+      .nav { display: flex; gap: 10px; flex-wrap: wrap; }
+      .nav a {
+        padding: 8px 11px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+      }
+      .nav a:hover { border-color: var(--line); background: #fff; }
+      .auth { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+      .auth .btn {
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 11px;
+        cursor: pointer;
+      }
+      .auth .btn.secondary {
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .flash { margin-top: 14px; display: grid; gap: 8px; }
+      .flash-item {
+        border: 1px solid var(--line);
+        border-left: 4px solid var(--brand);
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px 12px;
+      }
+      .page { padding: 28px 0 40px; }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 18px;
+      }
+      .grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      }
+      .card {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+      }
+      .muted { color: var(--muted); }
+      .title { margin: 0 0 8px; font-size: 1.4rem; }
+      .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .search { display: flex; gap: 8px; flex-wrap: wrap; }
+      .input {
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 12px;
+        min-width: 220px;
+        background: #fff;
+      }
+      .btn {
+        border: none;
+        border-radius: 10px;
+        background: var(--brand);
+        color: white;
+        padding: 10px 12px;
+        cursor: pointer;
+      }
+      .btn.alt {
+        background: #fff;
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      .meta { font-size: 0.9rem; color: var(--muted); }
+      .pager { margin-top: 14px; display: flex; gap: 8px; align-items: center; }
+      @media (max-width: 700px) {
+        .topbar-inner { align-items: flex-start; flex-direction: column; }
+        .auth { width: 100%; justify-content: flex-start; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="<%= root_path %>">MyAnime</a>
+        <nav class="nav">
+          <a href="<%= anime_path %>">애니</a>
+          <a href="<%= news_path %>">뉴스</a>
+          <a href="<%= quotes_path %>">명대사</a>
+          <% if logged_in? %>
+            <a href="<%= my_likes_path %>">내 좋아요</a>
+          <% end %>
+        </nav>
+        <div class="auth">
+          <% if logged_in? %>
+            <span class="muted"><%= current_user.display_name.presence || current_user.email %></span>
+            <%= button_to '로그아웃', logout_path, method: :delete, class: 'btn secondary' %>
+          <% else %>
+            <a class="btn secondary" href="<%= login_path %>">로그인</a>
+            <a class="btn" href="<%= register_path %>">회원가입</a>
+          <% end %>
+        </div>
+      </div>
+    </header>
+
+    <main class="container page">
+      <div class="flash">
+        <% flash.each do |_k, msg| %>
+          <div class="flash-item"><%= msg %></div>
+        <% end %>
+      </div>
+      <%= yield %>
+    </main>
+  </body>
+</html>

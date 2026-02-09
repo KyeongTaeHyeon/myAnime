@@ -1,0 +1,37 @@
+<section class="panel">
+  <div class="row">
+    <h1 class="title"><%= @anime.title_romaji.presence || @anime.title_english || @anime.title_native || 'Untitled' %></h1>
+    <a class="btn alt" href="<%= anime_path %>">목록으로</a>
+  </div>
+  <p class="meta">
+    <%= @anime.season.to_s.upcase %> <%= @anime.season_year %> ·
+    형식: <%= @anime.format || '-' %> ·
+    에피소드: <%= @anime.episodes || '-' %> ·
+    좋아요: <%= @like_count %>
+  </p>
+  <div style="margin-top: 10px;">
+    <% if logged_in? %>
+      <% if @liked %>
+        <%= button_to '좋아요 취소', anime_like_path(@anime), method: :delete, class: 'btn alt' %>
+      <% else %>
+        <%= button_to '좋아요', anime_like_path(@anime), method: :post, class: 'btn' %>
+      <% end %>
+    <% else %>
+      <a class="btn alt" href="<%= login_path %>">로그인 후 좋아요</a>
+    <% end %>
+  </div>
+</section>
+
+<section class="panel" style="margin-top: 14px;">
+  <h2 class="title" style="font-size: 1.2rem;">관련 명대사</h2>
+  <% if @quotes.any? %>
+    <% @quotes.each do |quote| %>
+      <article class="card" style="margin-top: 10px;">
+        <p style="margin: 0 0 8px;">“<%= quote.quote_text %>”</p>
+        <p class="meta"><%= quote.character_name %> · <%= quote.source %></p>
+      </article>
+    <% end %>
+  <% else %>
+    <p class="muted">등록된 명대사가 없습니다.</p>
+  <% end %>
+</section>

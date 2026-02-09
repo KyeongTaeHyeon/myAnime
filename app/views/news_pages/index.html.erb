@@ -1,0 +1,31 @@
+<section class="panel">
+  <div class="row">
+    <h1 class="title">애니 뉴스</h1>
+    <form class="search" action="<%= news_path %>" method="get">
+      <input class="input" type="text" name="q" value="<%= params[:q] %>" placeholder="뉴스 검색" />
+      <button class="btn" type="submit">검색</button>
+    </form>
+  </div>
+  <p class="meta">총 <%= @page[:totalElements] %>개</p>
+</section>
+
+<section style="margin-top: 14px;">
+  <% @articles.each do |article| %>
+    <article class="card" style="margin-bottom: 10px;">
+      <h3 style="margin: 0 0 8px;">
+        <a href="<%= article.url %>" target="_blank" rel="noopener"><%= article.title %></a>
+      </h3>
+      <p class="muted"><%= truncate(article.description.to_s, length: 190) %></p>
+      <p class="meta"><%= article.provider %> · <%= article.published_at&.strftime('%Y-%m-%d %H:%M') || '-' %></p>
+    </article>
+  <% end %>
+</section>
+
+<div class="pager">
+  <% if @page[:page].positive? %>
+    <a class="btn alt" href="<%= news_path(q: params[:q], page: @page[:page] - 1, size: @page[:size]) %>">이전</a>
+  <% end %>
+  <% unless @page[:last] %>
+    <a class="btn alt" href="<%= news_path(q: params[:q], page: @page[:page] + 1, size: @page[:size]) %>">다음</a>
+  <% end %>
+</div>

@@ -1,0 +1,42 @@
+<section class="panel">
+  <div class="row">
+    <h1 class="title">애니 목록</h1>
+    <form class="search" action="<%= anime_path %>" method="get">
+      <input class="input" type="text" name="q" value="<%= params[:q] %>" placeholder="제목 검색" />
+      <button class="btn" type="submit">검색</button>
+    </form>
+  </div>
+  <p class="meta">총 <%= @page[:totalElements] %>개 · 페이지 <%= @page[:page] + 1 %>/<%= [@page[:totalPages], 1].max %></p>
+</section>
+
+<section class="grid" style="margin-top: 14px;">
+  <% @anime_list.each do |anime| %>
+    <article class="card">
+      <h3 style="margin: 0 0 8px;">
+        <a href="<%= anime_page_path(anime) %>"><%= anime.title_romaji.presence || anime.title_english || anime.title_native || 'Untitled' %></a>
+      </h3>
+      <p class="meta"><%= anime.season.to_s.upcase %> <%= anime.season_year %></p>
+      <p class="meta">인기: <%= anime.popularity || '-' %> · 점수: <%= anime.mean_score || '-' %></p>
+      <div style="margin-top: 10px;">
+        <% if logged_in? %>
+          <% if @liked_ids.include?(anime.id) %>
+            <%= button_to '좋아요 취소', anime_like_path(anime), method: :delete, class: 'btn alt' %>
+          <% else %>
+            <%= button_to '좋아요', anime_like_path(anime), method: :post, class: 'btn' %>
+          <% end %>
+        <% else %>
+          <a class="btn alt" href="<%= login_path %>">로그인 후 좋아요</a>
+        <% end %>
+      </div>
+    </article>
+  <% end %>
+</section>
+
+<div class="pager">
+  <% if @page[:page].positive? %>
+    <a class="btn alt" href="<%= anime_path(q: params[:q], page: @page[:page] - 1, size: @page[:size]) %>">이전</a>
+  <% end %>
+  <% unless @page[:last] %>
+    <a class="btn alt" href="<%= anime_path(q: params[:q], page: @page[:page] + 1, size: @page[:size]) %>">다음</a>
+  <% end %>
+</div>

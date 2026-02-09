@@ -26,6 +26,15 @@
 - `POST /api/admin/ingest/status`
 - `POST /api/admin/ingest/all`
 
+## Web Pages (Rails SSR)
+- `GET /` 홈
+- `GET /anime` 애니 목록
+- `GET /anime/:id` 애니 상세 + 좋아요
+- `GET /news` 뉴스 목록
+- `GET /quotes` 명대사 목록
+- `GET /login`, `GET /register`
+- `GET /my/likes` 내 좋아요(로그인 필요)
+
 ## Run
 1. `.env.example`를 참고해 `.env` 생성
 2. Ruby를 4.0.0 이상으로 업그레이드

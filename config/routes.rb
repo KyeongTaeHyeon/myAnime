@@ -1,5 +1,20 @@
 Rails.application.routes.draw do
   root 'home#index'
+  get 'anime', to: 'anime_pages#index'
+  get 'anime/:id', to: 'anime_pages#show', as: :anime_page
+  post 'anime/:id/like', to: 'likes#create', as: :anime_like
+  delete 'anime/:id/like', to: 'likes#destroy'
+
+  get 'news', to: 'news_pages#index'
+  get 'quotes', to: 'quotes_pages#index'
+  get 'my/likes', to: 'library#index', as: :my_likes
+
+  get 'login', to: 'sessions#new'
+  post 'login', to: 'sessions#create'
+  delete 'logout', to: 'sessions#destroy'
+
+  get 'register', to: 'registrations#new'
+  post 'register', to: 'registrations#create'
 
   namespace :api do
     get 'health', to: 'health#index'
@@ -20,7 +35,7 @@ Rails.application.routes.draw do
     get 'quotes', to: 'quotes#index'
 
     namespace :admin do
-      namespace :ingest do
+      scope :ingest do
         post 'anilist/season', to: 'ingestion#season'
         post 'animechan/quotes', to: 'ingestion#quotes'
         post 'newsapi', to: 'ingestion#news'

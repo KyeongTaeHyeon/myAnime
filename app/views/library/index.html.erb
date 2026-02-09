@@ -1,0 +1,25 @@
+<section class="panel">
+  <h1 class="title">내 좋아요</h1>
+  <p class="meta">좋아요한 애니 <%= @page[:totalElements] %>개</p>
+</section>
+
+<section class="grid" style="margin-top: 14px;">
+  <% @likes.each do |like| %>
+    <article class="card">
+      <h3 style="margin: 0 0 8px;">
+        <a href="<%= anime_page_path(like.anime) %>"><%= like.anime.title_romaji.presence || like.anime.title_english || like.anime.title_native || 'Untitled' %></a>
+      </h3>
+      <p class="meta"><%= like.created_at.strftime('%Y-%m-%d %H:%M') %>에 좋아요</p>
+      <%= button_to '좋아요 취소', anime_like_path(like.anime), method: :delete, class: 'btn alt' %>
+    </article>
+  <% end %>
+</section>
+
+<div class="pager">
+  <% if @page[:page].positive? %>
+    <a class="btn alt" href="<%= my_likes_path(page: @page[:page] - 1, size: @page[:size]) %>">이전</a>
+  <% end %>
+  <% unless @page[:last] %>
+    <a class="btn alt" href="<%= my_likes_path(page: @page[:page] + 1, size: @page[:size]) %>">다음</a>
+  <% end %>
+</div>

@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
+  helper_method :current_user, :logged_in?
 
   private
 
@@ -11,6 +12,11 @@ class ApplicationController < ActionController::Base
 
   def current_user
     return @current_user if defined?(@current_user)
+
+    if session[:user_id].present?
+      @current_user = User.find_by(id: session[:user_id])
+      return @current_user
+    end
 
     token = bearer_token
     return @current_user = nil if token.blank?
@@ -26,6 +32,10 @@ class ApplicationController < ActionController::Base
     return if current_user
 
     render json: { error: 'Unauthorized' }, status: :unauthorized
+  end
+
+  def logged_in?
+    current_user.present?
   end
 
   def require_admin!

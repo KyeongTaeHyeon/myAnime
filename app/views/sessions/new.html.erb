@@ -1,0 +1,16 @@
+<section class="panel" style="max-width: 520px;">
+  <h1 class="title">로그인</h1>
+  <form action="<%= login_path %>" method="post">
+    <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+    <p>
+      <label for="email">이메일</label><br />
+      <input id="email" class="input" type="email" name="email" required />
+    </p>
+    <p>
+      <label for="password">비밀번호</label><br />
+      <input id="password" class="input" type="password" name="password" required />
+    </p>
+    <button class="btn" type="submit">로그인</button>
+  </form>
+  <p class="meta" style="margin-top: 12px;">계정이 없으면 <a href="<%= register_path %>">회원가입</a></p>
+</section>
