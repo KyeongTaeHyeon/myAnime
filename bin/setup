@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! ruby -e 'exit(RUBY_VERSION.to_f >= 4.0 ? 0 : 1)'; then
+  echo "Ruby 4.0.0+ is required."
+  exit 1
+fi
+
+bundle install
+bundle exec rails db:create db:migrate
